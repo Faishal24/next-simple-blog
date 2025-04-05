@@ -1,56 +1,20 @@
 import BlogCard from "@/components/blog-card";
 import { Button } from "@/components/ui/button";
-import { PostProps } from "@/types/post";
+import prisma from "@/lib/prisma";
 import Image from "next/image";
 
-export default function Home() {
-  const posts: PostProps[] = [
-    {
-      title: "Lorem ipsum dolor sit amet",
-      slug: "lorem-ipsum-dolor-sit-amet",
-      description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Nam, quas.",
-      avatar: "https://avatar.iran.liara.run/public/5",
-      thumbnail: "https://fakeimg.pl/600x400",
-      name: "Fulano",
-      userSlug: "fulano",
-      status: "published",
-      author_id: "1",
+export default async function Home() {
+  const latestPosts = await prisma.post.findMany({
+    include: {
+      author: {
+        select: {
+          name: true,
+          avatar: true,
+          slug: true,
+        },
+      },
     },
-    {
-      title: "Lorem, ipsum dolor.",
-      slug: "lorem-ipsum-dolor",
-      description:
-        "Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatem impedit placeat ratione sit nostrum reprehenderit?",
-      avatar: "https://avatar.iran.liara.run/public/6",
-      thumbnail: "https://fakeimg.pl/600x400",
-      name: "Hanafi",
-      userSlug: "hanafi",
-      status: "published",
-      author_id: "2",
-    },
-    {
-      title: "Lorem ipsum dolor sit.",
-      slug: "lorem-ipsum-dolor-sit",
-      description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Earum, dolores.",
-      avatar: "https://avatar.iran.liara.run/public/7",
-      thumbnail: "https://fakeimg.pl/600x400",
-      name: "Ali",
-      userSlug: "ali",
-      status: "published",
-      author_id: "3",
-    },
-    {
-      title: "Lorem ipsum dolor sit 2.",
-      slug: "lorem-ipsum-dolor-sit-2",
-      description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Earum, dolores.",
-      avatar: "https://avatar.iran.liara.run/public/8",
-      thumbnail: "https://fakeimg.pl/600x400",
-      name: "Usman",
-      userSlug: "usman",
-      status: "published",
-      author_id: "4",
-    },
-  ];
+  });
 
   return (
     <main className="flex-1">
@@ -86,7 +50,7 @@ export default function Home() {
         <div className="frame">
           <h2 className="text-3xl font-semibold mb-8">Latest Posts</h2>
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {posts.map((post, index) => (
+            {latestPosts.map((post, index) => (
               <BlogCard post={post} key={index} />
             ))}
           </div>

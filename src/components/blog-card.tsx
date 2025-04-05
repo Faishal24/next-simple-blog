@@ -34,17 +34,17 @@ export default function BlogCard({ post }: BlogCardProps) {
         </CardContent>
       </Link>
 
-      <Link href={`/user/${post.userSlug}`} onClick={(e) => e.stopPropagation()}>
+      <Link href={`/user/${post.author.slug}`} onClick={(e) => e.stopPropagation()}>
         <CardFooter className="flex gap-3 h-full items-end" onClick={(e) => e.stopPropagation()}>
           <div className="flex gap-3 items-center">
             <Image
-              src={post.avatar}
-              alt={`Avatar of ${post.name}`}
+              src={post.author.avatar}
+              alt={`Avatar of ${post.author.name}`}
               width={50}
               height={50}
               className="size-8 rounded-full"
             />
-            <p className="text-black/60">{post.name}</p>
+            <p className="text-black/60">{post.author.name}</p>
           </div>
         </CardFooter>
       </Link>

@@ -7,10 +7,14 @@ export interface PostProps {
   thumbnail: string;
   status: 'draft' | 'published' | 'scheduled';
   published_at?: string;
-  author_id: string;
+  authorId: string;
+  created_at?: string;
+  updated_at?: string;
   
   // For Display
-  name: string;
-  avatar: string;
-  userSlug: string;
+  author: {
+    name: string;
+    avatar: string;
+    slug: string;
+  }
 }
