@@ -1,16 +1,12 @@
 "use client";
 
 import React from "react";
-import { Card, CardContent, CardFooter, CardHeader } from "./ui/card";
+import { Card, CardContent, CardFooter, CardHeader } from "../../../components/ui/card";
 import Image from "next/image";
 import Link from "next/link";
 import { PostProps } from "@/types/post";
 
-type BlogCardProps = {
-  post: PostProps;
-};
-
-export default function BlogCard({ post }: BlogCardProps) {
+export default function BlogCard({ post }: { post: PostProps }) {
   return (
     <Card className="pt-0 hover:scale-102 transition-all duration-300">
       <Link href={`/post/${post.slug}`} passHref className="h-full">

@@ -3,7 +3,7 @@ export interface PostProps {
   title: string;
   slug: string;
   description: string;
-  content?: string;
+  content?: string | null;
   thumbnail: string;
   status: 'draft' | 'published' | 'scheduled';
   published_at?: string;
