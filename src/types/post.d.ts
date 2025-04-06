@@ -6,10 +6,10 @@ export interface PostProps {
   content?: string | null;
   thumbnail: string;
   status: 'draft' | 'published' | 'scheduled';
-  published_at?: string;
+  publishedAt?: string;
   authorId: string;
-  created_at?: string;
-  updated_at?: string;
+  createdAt?: string;
+  updatedAt?: string;
   
   // For Display
   author: {
