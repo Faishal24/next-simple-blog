@@ -21,7 +21,13 @@ export async function GET(request: NextRequest) {
       where: {
         ...(statusFilter ? { status: statusFilter } : {}),
       },
-      include: {
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        description: true,
+        thumbnail: true,
+        status: true,
         author: {
           select: {
             name: true,

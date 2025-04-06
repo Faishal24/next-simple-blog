@@ -11,7 +11,7 @@ export async function getPosts(status?: string, sort?: string): Promise<PostProp
     return res.data;
   } catch (error) {
     console.error("Failed to fetch posts:", error);
-    return [];
+    return []
   }
 }
 

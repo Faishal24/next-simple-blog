@@ -3,13 +3,15 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import axios from "axios";
+import { useEffect } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { getPostBySlug } from "@/lib/getPostsBySlug";
 
 const formSchema = z.object({
   title: z.string().min(3, { message: "Title is required and must be at least 3 characters." }),
@@ -21,7 +23,9 @@ const formSchema = z.object({
   }),
 });
 
-export default function PostForm() {
+export default function EditPostForm() {
+  const params = useParams();
+  const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -33,17 +37,41 @@ export default function PostForm() {
     },
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log("Submit values:", values);
-    const res = axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/api/posts`, values);
-    res
-      .then((res) => {
-        console.log("Post created:", res.data);
-        form.reset();
-      })
-      .catch((err) => {
-        console.error("Error creating post:", err);
-      });
+  useEffect(() => {
+    const fetchPost = async () => {
+      try {
+        const post = await getPostBySlug(params.slug as string);
+        if (!post) {
+          console.error("Post not found");
+          router.push("/");
+          return;
+        }
+        
+        form.reset({
+          title: post.title || "",
+          description: post.description || "",
+          thumbnail: post.thumbnail || "",
+          content: post.content || "",
+          status: post.status || "draft",
+        });
+      } catch (error) {
+        console.error("Error fetching post:", error);
+        router.push("/");
+      }
+    };
+
+    if (params.slug) {
+      fetchPost();
+    }
+  }, [params.slug, form, router]);
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    try {
+      await axios.patch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/posts/${params.slug}`, values);
+      router.push(`/post/${params.slug}`);
+    } catch (error) {
+      console.error("Error updating post:", error);
+    }
   };
 
   return (
@@ -103,7 +131,7 @@ export default function PostForm() {
               <FormItem>
                 <FormLabel>Content</FormLabel>
                 <FormControl>
-                  <Textarea placeholder="Write your content..." {...field} />
+                  <Textarea placeholder="Write your content..." className="min-h-[200px]" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -117,7 +145,7 @@ export default function PostForm() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Status</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select status" />
@@ -134,11 +162,16 @@ export default function PostForm() {
             )}
           />
 
-          <Button type="submit" className="w-full">
-            Submit
-          </Button>
+          <div className="flex gap-4">
+            <Button type="submit" className="flex-1">
+              Update Post
+            </Button>
+            <Button type="button" variant="outline" className="flex-1" onClick={() => router.back()}>
+              Cancel
+            </Button>
+          </div>
         </form>
       </Form>
     </div>
   );
-}
+} 

@@ -5,12 +5,14 @@ import { notFound } from "next/navigation";
 import { getTimeAgo } from "@/lib/getTimeAgo";
 import DropdownAction from "./components/dropdown-action";
 
-export default async function Post({ params }: { params: { slug: string } }) {
-  const post = await getPostBySlug(params.slug);
+export default async function Post({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const user = await getCurrentUser();
+  const post = await getPostBySlug(slug);
 
   if (!post) return notFound();
 
-  const user = await getCurrentUser();
+  const isAuthor = user?.id === post.authorId;
 
   return (
     <section className="py-10">
@@ -35,7 +37,7 @@ export default async function Post({ params }: { params: { slug: string } }) {
                 <p className="text-sm text-gray-500">Posted {getTimeAgo(post.createdAt)}</p>
               </div>
             </div>
-            {post.authorId === user?.id && <DropdownAction />}
+            {isAuthor && <DropdownAction />}
           </div>
 
           <Image src={post.thumbnail} alt={post.title} width={500} height={300} className="w-full max-w-2xl rounded" />
