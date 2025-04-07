@@ -10,9 +10,11 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import axios from "axios";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
-  title: z.string().min(3, { message: "Title is required and must be at least 3 characters." }),
+  title: z.string().min(3, { message: "Title is required and must be at least 3 characters." }).max(60, { message: "Title must be less than 60 characters." }),
   description: z.string().min(5, { message: "Description is required and must be at least 5 characters." }),
   thumbnail: z.string().url({ message: "Thumbnail must be a valid URL." }),
   content: z.string().optional(),
@@ -22,6 +24,8 @@ const formSchema = z.object({
 });
 
 export default function PostForm() {
+  const router = useRouter();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -38,8 +42,9 @@ export default function PostForm() {
     const res = axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/api/posts`, values);
     res
       .then((res) => {
-        console.log("Post created:", res.data);
         form.reset();
+        toast.success("Post created successfully")
+        router.push(`/post/${res.data.slug}`)
       })
       .catch((err) => {
         console.error("Error creating post:", err);

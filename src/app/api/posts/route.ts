@@ -1,4 +1,4 @@
-import { getCurrentUser } from "@/app/utils/supabase/getCurrentUser";
+import { getCurrentServerUser } from "@/app/utils/supabase/getCurrentServerUser";
 import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -54,7 +54,7 @@ export async function POST(request: Request) {
   const body = await request.json();
   const { title, description, thumbnail, content, status } = body;
 
-  const user = await getCurrentUser();
+  const user = await getCurrentServerUser();
 
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

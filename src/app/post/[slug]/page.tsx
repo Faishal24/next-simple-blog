@@ -1,4 +1,4 @@
-import { getCurrentUser } from "@/app/utils/supabase/getCurrentUser";
+import { getCurrentServerUser } from "@/app/utils/supabase/getCurrentServerUser";
 import { getPostBySlug } from "@/lib/getPostsBySlug";
 import Image from "next/image";
 import { notFound } from "next/navigation";
@@ -7,7 +7,7 @@ import DropdownAction from "./components/dropdown-action";
 
 export default async function Post({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const user = await getCurrentUser();
+  const user = await getCurrentServerUser();
   const post = await getPostBySlug(slug);
 
   if (!post) return notFound();
@@ -37,7 +37,7 @@ export default async function Post({ params }: { params: Promise<{ slug: string 
                 <p className="text-sm text-gray-500">Posted {getTimeAgo(post.createdAt)}</p>
               </div>
             </div>
-            {isAuthor && <DropdownAction />}
+            {isAuthor && <DropdownAction slug={slug} />}
           </div>
 
           <Image src={post.thumbnail} alt={post.title} width={500} height={300} className="w-full max-w-2xl rounded" />

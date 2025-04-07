@@ -1,6 +1,6 @@
 import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { getCurrentUser } from "@/app/utils/supabase/getCurrentUser";
+import { getCurrentServerUser } from "@/app/utils/supabase/getCurrentServerUser";
 
 export async function GET(_: Request, { params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -48,7 +48,7 @@ export async function GET(_: Request, { params }: { params: Promise<{ slug: stri
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const user = await getCurrentUser();
+  const user = await getCurrentServerUser();
 
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -97,5 +97,42 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ sl
   } catch (error) {
     console.error("Failed to update post:", error);
     return NextResponse.json({ error: "Failed to update post" }, { status: 500 });
+  }
+}
+
+export async function DELETE(
+  request: Request,
+  { params }: { params: { slug: string } }
+) {
+  const { slug } = params;
+  const user = await getCurrentServerUser();
+
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    // First check if the post exists and belongs to the user
+    const existingPost = await prisma.post.findUnique({
+      where: { slug },
+      select: { authorId: true },
+    });
+
+    if (!existingPost) {
+      return NextResponse.json({ error: "Post not found" }, { status: 404 });
+    }
+
+    if (existingPost.authorId !== user.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+    }
+
+    await prisma.post.delete({
+      where: { slug },
+    });
+
+    return NextResponse.json({ message: "Post deleted successfully" });
+  } catch (error) {
+    console.error("Failed to delete post:", error);
+    return NextResponse.json({ error: "Failed to delete post" }, { status: 500 });
   }
 }

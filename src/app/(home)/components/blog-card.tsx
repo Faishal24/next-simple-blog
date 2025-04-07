@@ -16,7 +16,7 @@ export default function BlogCard({ post }: { post: PostProps }) {
             alt={`Thumbnail for ${post.title}`}
             width={400}
             height={200}
-            className="max-h-64 w-full object-cover"
+            className="h-64 w-full object-cover"
           />
         </CardHeader>
       </Link>

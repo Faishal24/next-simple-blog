@@ -1,16 +1,11 @@
-import { createClient } from "./server";
+import axios from "axios";
 
 export async function getCurrentUser() {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser();
-
-  if (error) {
+  try {
+    const response = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/user`);
+    return response.data;
+  } catch (error) {
+    console.error("Failed to get current user:", error);
     return null;
   }
-
-  return user;
 }

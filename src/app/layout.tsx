@@ -3,6 +3,7 @@ import { Roboto_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
+import { Toaster } from "@/components/ui/sonner";
 
 
 export const robotoMono = Roboto_Mono({
@@ -28,6 +29,7 @@ export default function RootLayout({
           {children}
           <Footer />
         </div>
+        <Toaster richColors/>
       </body>
     </html>
   );

@@ -9,12 +9,14 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import axios from "axios";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { getPostBySlug } from "@/lib/getPostsBySlug";
+import { getCurrentUser } from "@/app/utils/supabase/getCurrentUser";
+import { toast } from "sonner";
 
 const formSchema = z.object({
-  title: z.string().min(3, { message: "Title is required and must be at least 3 characters." }),
+  title: z.string().min(3, { message: "Title is required and must be at least 3 characters." }).max(60, { message: "Title must be less than 60 characters." }),
   description: z.string().min(5, { message: "Description is required and must be at least 5 characters." }),
   thumbnail: z.string().url({ message: "Thumbnail must be a valid URL." }),
   content: z.string().optional(),
@@ -26,6 +28,9 @@ const formSchema = z.object({
 export default function EditPostForm() {
   const params = useParams();
   const router = useRouter();
+  const [isAuthorized, setIsAuthorized] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -38,15 +43,28 @@ export default function EditPostForm() {
   });
 
   useEffect(() => {
-    const fetchPost = async () => {
+    const checkAuthAndFetchPost = async () => {
       try {
-        const post = await getPostBySlug(params.slug as string);
-        if (!post) {
-          console.error("Post not found");
+        const [post, user] = await Promise.all([
+          getPostBySlug(params.slug as string),
+          getCurrentUser()
+        ]);
+
+        if (!post || !user) {
+          console.error("Post not found or user not authenticated");
           router.push("/");
           return;
         }
-        
+
+        // Check if current user is the author
+        if (post.authorId !== user.id) {
+          // console.error("Unauthorized: You are not the author of this post");
+          toast.error("Unauthorized: You are not the author of this post")
+          router.push(`/post/${params.slug}`);
+          return;
+        }
+
+        setIsAuthorized(true);
         form.reset({
           title: post.title || "",
           description: post.description || "",
@@ -55,13 +73,15 @@ export default function EditPostForm() {
           status: post.status || "draft",
         });
       } catch (error) {
-        console.error("Error fetching post:", error);
+        console.error("Error:", error);
         router.push("/");
+      } finally {
+        setIsLoading(false);
       }
     };
 
     if (params.slug) {
-      fetchPost();
+      checkAuthAndFetchPost();
     }
   }, [params.slug, form, router]);
 
@@ -73,6 +93,18 @@ export default function EditPostForm() {
       console.error("Error updating post:", error);
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="frame max-w-xl py-16 text-center">
+        <p>Loading...</p>
+      </div>
+    );
+  }
+
+  if (!isAuthorized) {
+    return null;
+  }
 
   return (
     <div className="frame max-w-xl mx-auto py-16">
