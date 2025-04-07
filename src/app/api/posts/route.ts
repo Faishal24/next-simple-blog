@@ -1,4 +1,4 @@
-import { getCurrentServerUser } from "@/app/utils/supabase/getCurrentServerUser";
+import { getCurrentServerUser } from "@/lib/supabase/server-auth";
 import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 

@@ -1,6 +1,6 @@
 import React from "react";
 import BlogCard from "./blog-card";
-import { getPosts } from "@/lib/getPosts";
+import { getPosts } from "@/lib/queries/getPosts";
 
 export default async function LatestPosts() {
   const posts = await getPosts("published", "desc");

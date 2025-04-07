@@ -1,6 +1,6 @@
 import UnauthUser from "./components/unauth-user";
 import AuthUser from "./components/auth-user";
-import { getCurrentServerUser } from "../utils/supabase/getCurrentServerUser";
+import { getCurrentServerUser } from "@/lib/supabase/server-auth";
 
 export default async function Home() {
   const user = await getCurrentServerUser();

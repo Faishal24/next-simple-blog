@@ -11,8 +11,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { getPostBySlug } from "@/lib/getPostsBySlug";
-import { getCurrentUser } from "@/app/utils/supabase/getCurrentUser";
+import { getPostBySlug } from "@/lib/queries/getPostsBySlug";
+import { getCurrentUser } from "@/lib/supabase/client-auth";
 import { toast } from "sonner";
 
 const formSchema = z.object({

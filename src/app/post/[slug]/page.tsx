@@ -1,8 +1,8 @@
-import { getCurrentServerUser } from "@/app/utils/supabase/getCurrentServerUser";
-import { getPostBySlug } from "@/lib/getPostsBySlug";
+import { getCurrentServerUser } from "@/lib/supabase/server-auth";
+import { getPostBySlug } from "@/lib/queries/getPostsBySlug";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { getTimeAgo } from "@/lib/getTimeAgo";
+import { getTimeAgo } from "@/lib/utils/getTimeAgo";
 import DropdownAction from "./components/dropdown-action";
 
 export default async function Post({ params }: { params: Promise<{ slug: string }> }) {

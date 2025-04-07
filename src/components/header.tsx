@@ -10,7 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { getCurrentDbUser } from "@/app/utils/supabase/getCurrentDbUser";
+import { getCurrentDbUser } from "@/lib/supabase/server-auth";
 import Image from "next/image";
 
 export default async function Header() {

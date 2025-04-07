@@ -1,6 +1,6 @@
 import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { getCurrentServerUser } from "@/app/utils/supabase/getCurrentServerUser";
+import { getCurrentServerUser } from "@/lib/supabase/server-auth";
 
 export async function GET(_: Request, { params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
